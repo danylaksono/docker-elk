@@ -7,3 +7,5 @@ FROM docker.elastic.co/logstash/logstash:${ELASTIC_VERSION}
 # Example: RUN logstash-plugin install logstash-filter-json
 # RUN logstash-plugin install logstash-input-jdbc
 #  ERROR: Installation aborted, plugin 'logstash-input-jdbc' is already provided by 'logstash-integration-jdbc'
+
+# RUN logstash-plugin install logstash-filter-json

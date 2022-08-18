@@ -1,0 +1,64 @@
+#input {
+#	beats {
+#		port => 5044
+#	}
+
+#	tcp {
+#		port => 50000
+#	}
+#}
+
+input {
+    jdbc{
+        jdbc_driver_library => ""
+        jdbc_driver_class => "org.postgresql.Driver"
+        jdbc_connection_string => "jdbc:postgresql://host.docker.internal:5432/elastic"
+        jdbc_user => "postgres"
+		schedule => "30 * * * *"
+        jdbc_password => "postgres"
+        # "jdbc_driver_library" => "/usr/share/logstash-core/lib/jars/logstash/postgresql.jar"
+        #statement => 'SELECT  * FROM public.handwash_station;'
+		statement => "SELECT id, almt_op, kecamatan, kelurahan, st_asgeojson(geom) as geometry
+                        FROM public.geocode_indonesia;"
+		#jdbc_paging_enabled => "true"
+        #jdbc_page_size => "100000"
+	}
+}
+#output{
+#    elasticsearch{
+#      hosts => ["http://localhost:9200"]
+#      index => "postgre_elastic"
+#      document_id => "postgre_elastic%{id}"
+#      user => elastic
+#      password => changeme
+      #ssl => false
+      #ssl_certificate_verification => false
+#    }
+#}
+
+## Add your filters / logstash plugins configuration here
+filter {
+	json {
+		source => "geometry"
+		target => "geometry"
+	}
+	#mutate {
+    #    gsub => [
+          # replace all forward slashes with underscore
+          # replace backslashes, question marks, hashes, and minuses
+          # with a dot "."
+    #      "geometry", "[\\]", ""
+    #    ]
+    #  }
+}
+output {
+	elasticsearch {
+		hosts => "elasticsearch:9200"
+	    index => "postgres_elastic"
+		action => "update"
+		doc_as_upsert => true
+      	document_id => "postgres_elastic%{id}"
+		user => "elastic"
+		password => "changeme"
+	}
+}

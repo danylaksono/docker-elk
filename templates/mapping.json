@@ -1,0 +1,9 @@
+PUT /handwash_station/_mapping
+{
+    "properties": {
+        "alamat": {
+            "type": "text",
+            "analyzer": "edge_ngram_analyzer"
+        }
+    }
+}
